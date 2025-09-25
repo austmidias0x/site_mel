@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { CheckCircle, Loader2, User, Phone, Mail, UserPlus, AlertCircle } from "lucide-react"
-import { insertCadastro } from "@/lib/supabase"
+import { insertLead } from "@/lib/supabase"
 
 // Schema de validação usando Zod
 const formSchema = z.object({
@@ -64,13 +64,13 @@ export default function FormsPage() {
     
     try {
       // Inserir dados no Supabase
-      const result = await insertCadastro({
+      const result = await insertLead({
         name: data.name,
         whatsapp: data.whatsapp,
         email: data.email,
       })
       
-      console.log("Cadastro realizado com sucesso:", result)
+      console.log("Lead salvo com sucesso:", result)
       setIsSubmitted(true)
       form.reset()
     } catch (error) {

@@ -8,7 +8,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Tipos TypeScript para o banco de dados
-export interface Cadastro {
+export interface LeadMel {
   id?: number
   name: string
   whatsapp: string
@@ -16,10 +16,10 @@ export interface Cadastro {
   created_at?: string
 }
 
-// Função para inserir um novo cadastro
-export async function insertCadastro(data: Omit<Cadastro, 'id' | 'created_at'>) {
+// Função para inserir um novo lead
+export async function insertLead(data: Omit<LeadMel, 'id' | 'created_at'>) {
   const { data: result, error } = await supabase
-    .from('cadastros')
+    .from('leads_mel')
     .insert([
       {
         name: data.name,
@@ -30,22 +30,22 @@ export async function insertCadastro(data: Omit<Cadastro, 'id' | 'created_at'>) 
     .select()
 
   if (error) {
-    console.error('Erro ao inserir cadastro:', error)
+    console.error('Erro ao inserir lead:', error)
     throw error
   }
 
   return result
 }
 
-// Função para buscar todos os cadastros (para testes)
-export async function getCadastros() {
+// Função para buscar todos os leads (para testes)
+export async function getLeads() {
   const { data, error } = await supabase
-    .from('cadastros')
+    .from('leads_mel')
     .select('*')
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Erro ao buscar cadastros:', error)
+    console.error('Erro ao buscar leads:', error)
     throw error
   }
 
