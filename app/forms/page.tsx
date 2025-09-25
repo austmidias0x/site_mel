@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { CheckCircle, Loader2, User, Phone, Mail, UserPlus } from "lucide-react"
+import { CheckCircle, Loader2, User, Phone, Mail, UserPlus, AlertCircle } from "lucide-react"
+import { insertCadastro } from "@/lib/supabase"
 
 // Schema de validação usando Zod
 const formSchema = z.object({
@@ -36,6 +37,7 @@ type FormData = z.infer<typeof formSchema>
 export default function FormsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -58,16 +60,22 @@ export default function FormsPage() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
+    setSubmitError(null)
     
     try {
-      // Simula uma requisição para o servidor
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      // Inserir dados no Supabase
+      const result = await insertCadastro({
+        name: data.name,
+        whatsapp: data.whatsapp,
+        email: data.email,
+      })
       
-      console.log("Dados do formulário:", data)
+      console.log("Cadastro realizado com sucesso:", result)
       setIsSubmitted(true)
       form.reset()
     } catch (error) {
       console.error("Erro ao enviar formulário:", error)
+      setSubmitError("Erro ao realizar cadastro. Tente novamente.")
     } finally {
       setIsSubmitting(false)
     }
@@ -75,6 +83,7 @@ export default function FormsPage() {
 
   const resetForm = () => {
     setIsSubmitted(false)
+    setSubmitError(null)
     form.reset()
   }
 
@@ -191,6 +200,13 @@ export default function FormsPage() {
                   )}
                 />
 
+                {submitError && (
+                  <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                    <AlertCircle className="h-4 w-4" />
+                    {submitError}
+                  </div>
+                )}
+
                 <Button
                   type="submit"
                   className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700 transition-colors"
@@ -200,7 +216,7 @@ export default function FormsPage() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Enviando...
+                      Salvando no banco...
                     </>
                   ) : (
                     <>
